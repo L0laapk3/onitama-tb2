@@ -40,13 +40,3 @@ constexpr auto TOTAL_SIZE = []{
 			total += SIZES[i][j];
 	return total;
 }();
-
-template<U32 TB_MEN>
-struct TableBase {
-	TableBase() : table(std::make_unique<Table>()) {
-		std::ranges::fill(*table, 0);
-	}
-
-	using Table = std::array<U32, TOTAL_SIZE<TB_MEN>>; // 1 bit per card combination - 30 combinations
-	std::unique_ptr<Table> table;
-};
