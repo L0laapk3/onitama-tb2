@@ -1,4 +1,0 @@
-cc_binary(
-    name = "tb",
-    srcs = glob(["src/**/*.cpp"]) + glob(["src/**/*.h"]) + glob(["src/**/*.hpp"]),
-)
