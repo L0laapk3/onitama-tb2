@@ -1,8 +1,8 @@
-build --action_env=CC=clang
+build --action_env=CC=clang-22
 build:common --cxxopt='-std=c++26'
 build:common --copt=-fcolor-diagnostics
 build:common --cpu=local
-build:common --cxxopt='-march=native'
+build:common --cxxopt='-march=native' --cxxopt='-fconstexpr-steps=10000000'
 build:common --cxxopt='-Wall' --cxxopt='-Werror' --cxxopt='-Wpedantic' --cxxopt='-Wno-unused-parameter' --cxxopt='-Wno-missing-braces' --cxxopt='-Wno-unused-variable' --cxxopt='-Wno-unused-but-set-variable' --cxxopt='-Wno-unused-function' --cxxopt='-Wno-unused-private-field' --cxxopt='-Wno-switch' --cxxopt='-Wno-language-extension-token'
 build --config=common
 

@@ -1,0 +1,4 @@
+cc_binary(
+    name = "tb",
+    srcs = glob(["**/*.cpp"]) + glob(["**/*.h"]) + glob(["**/*.hpp"]),
+)

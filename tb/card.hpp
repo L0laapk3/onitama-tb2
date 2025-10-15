@@ -4,6 +4,8 @@
 
 #include <array>
 #include <functional>
+#include <string_view>
+#include <stdexcept>
 
 
 constexpr U32 BOAR		= 0b00000'00100'01010'00000'00000;
@@ -24,6 +26,26 @@ constexpr U32 ROOSTER	= 0b00000'01000'01010'00010'00000;
 constexpr U32 TIGER		= 0b00100'00000'00000'00100'00000;
 
 constexpr std::array<U32, 16> ALL_CARDS { BOAR, COBRA, CRAB, CRANE, DRAGON, EEL, ELEPHANT, FROG, GOOSE, HORSE, MANTIS, MONKEY, OX, RABBIT, ROOSTER, TIGER };
+
+U32 inline strToCard(std::string_view str) {
+	if (str == "boar")		return BOAR;
+	if (str == "cobra")		return COBRA;
+	if (str == "crab")		return CRAB;
+	if (str == "crane")		return CRANE;
+	if (str == "dragon")	return DRAGON;
+	if (str == "eel")		return EEL;
+	if (str == "elephant")	return ELEPHANT;
+	if (str == "frog")		return FROG;
+	if (str == "goose")		return GOOSE;
+	if (str == "horse")		return HORSE;
+	if (str == "mantis")	return MANTIS;
+	if (str == "monkey")	return MONKEY;
+	if (str == "ox")		return OX;
+	if (str == "rabbit")	return RABBIT;
+	if (str == "rooster")	return ROOSTER;
+	if (str == "tiger")		return TIGER;
+	throw std::runtime_error("Unknown card: " + std::string(str));
+}
 
 struct CardPermutation {
 	std::array<std::array<U8, 2>, 2> playerCards;
