@@ -13,6 +13,7 @@ void testOne(const CardsInfo& cards) {
 
 	BoardIndex bi;
 	iterateTBCounts<TB_MEN>([&](U32 pieceCnt_kingsIndex, U32 rowSize) {
+		bi.pieceCnt_kingsIndex = pieceCnt_kingsIndex;
 		// std::cout << cardI << '\t' << pieceCountI << '\t' << kingI << " (" << _tzcnt_u64(bbk0) << ' ' << ik1 << ")\t" << p0Combinations << std::endl;
 
 		for (bi.pieceIndex = 0; bi.pieceIndex < rowSize; bi.pieceIndex++) {
@@ -98,7 +99,7 @@ void exhaustiveIndexTest(const CardsInfo& cards) {
 
 								// if (!board.isWinInOne<true>(reverseMoveBoard)) {
 								auto bi = boardToIndex<TB_MEN, true>(board);
-								if (bi.pieceCnt_kingsIndex == 3271 && bi.pieceIndex == 179064700) {
+								if (bi.pieceCnt_kingsIndex == 7165 && bi.pieceIndex == 38114) {
 									auto bi = boardToIndex<TB_MEN, true>(board);
 								}
 								auto result = indexToBoard<TB_MEN, true>(bi);
