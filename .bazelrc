@@ -1,0 +1,24 @@
+build --action_env=CC=clang
+build:common --cxxopt='-std=c++26'
+build:common --copt=-fcolor-diagnostics
+build:common --cpu=local
+build:common --cxxopt='-march=native'
+build:common --cxxopt='-Wall' --cxxopt='-Werror' --cxxopt='-Wpedantic' --cxxopt='-Wno-unused-parameter' --cxxopt='-Wno-missing-braces' --cxxopt='-Wno-unused-variable' --cxxopt='-Wno-unused-but-set-variable' --cxxopt='-Wno-unused-function' --cxxopt='-Wno-unused-private-field' --cxxopt='-Wno-switch' --cxxopt='-Wno-language-extension-token'
+build --config=common
+
+build:opt --copt=-Ofast
+build:opt --cxxopt=-Ofast
+build:opt --copt=-flto
+build:opt --strip=always
+build:opt --cxxopt=-flto
+build:opt --linkopt=-flto
+
+build:opt_symbols --config=opt
+build:opt_symbols --strip=never
+build:opt_symbols --copt=-g
+build:opt_symbols --cxxopt=-g
+
+build:dbg --config=common
+build:dbg --copt=-g
+build:dbg --cxxopt=-g
+build:dbg --strip=never
