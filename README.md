@@ -8,9 +8,9 @@
 
 # Race conditions
 for the algo to be correct: read(y) missing write(y), cannot be allowed to happen if read(x) received write(x)
-1. read(y) is always required for read(x) by dependency chain
 1. solution: release write(y) acquire read(y)
-1. writes need to be atomic or else write(y) can not happen entirely due to thread conflicts
+2. writes need to be atomic or else write(y) can not happen entirely due to thread conflicts
+3. read(x) can be non atomic because theres no way in fuck read(x) happens before read(y) in practice & also bits are never cleared, only set
 
 # Pseudocode
 ```cpp
