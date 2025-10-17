@@ -1,6 +1,5 @@
 #pragma once
 
-#include "card.hpp"
 #include "types.h"
 #include "math.h"
 
