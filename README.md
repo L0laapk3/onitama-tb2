@@ -7,6 +7,7 @@
 
 
 # Race conditions
+(wrong)
 for the algo to be correct: read(y) missing write(y), cannot be allowed to happen if read(x) received write(x)
 1. solution: release write(y) acquire read(y)
 2. writes need to be atomic or else write(y) can not happen entirely due to thread conflicts
