@@ -1,6 +1,5 @@
-#include "math.h"
-#include "table.h"
 #include "card.hpp"
+#include "generate.h"
 
 
 #include <iostream>
@@ -23,6 +22,8 @@ int main(int argc, char** argv) {
 
 	const CardsInfo cardsInfo{ cards };
 
+
+	generate(cardsInfo);
 
 	// if (1)
     //     testIndexing(cardsInfo);

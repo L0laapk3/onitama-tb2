@@ -7,6 +7,6 @@ constexpr U64 fact(int from, int downto = 0) {
 }
 
 
-constexpr U64 choose(int n, int k) {
+constexpr U64 binomial(int n, int k) {
 	return fact(n, n - k) / fact(k);
 }
