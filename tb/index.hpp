@@ -50,6 +50,8 @@ static auto UNRANK_LUT = []{
 	return lut;
 }();
 
+static_assert(sizeof(UNRANK_LUT<25, 5, false>) == 212520);
+
 // To reduce the number of LUT's, the assumption is made that UNRANK_LUT<i> matches exactly with the start of UNRANK_LUT<i+1>
 constexpr U32 LUT_N = 25;
 
