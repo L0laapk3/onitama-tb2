@@ -1,5 +1,5 @@
 #include "math.h"
-#include "tablebase.h"
+#include "table.h"
 #include "card.hpp"
 
 
