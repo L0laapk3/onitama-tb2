@@ -1,11 +1,10 @@
 #pragma once
 
 #include "types.h"
-#include "math.h"
+#include "rank.hpp"
 
 #include <array>
 #include <tuple>
-#include <utility>
 
 
 template<U32 HALFMEN>
@@ -14,10 +13,10 @@ struct Table;
 template<U32 P0, U32 P1>
 using Cell = std::array<U32, P0 * P1>;
 template<U32 P0, U32 P1>
-using Row = std::array<Cell<P0, P1>, binomial(25 - P0, P1)>;
+using Row = CombArray<Cell<P0, P1>, 25 - P0, P1>;
 template<U32 P0, U32 P1>
-struct FixedMenTable : std::array<Row<P0, P1>, binomial(25, P0)> {
-	using Base = std::array<Row<P0, P1>, binomial(25, P0)>;
+struct FixedMenTable : CombArray<Row<P0, P1>, 25, P0> {
+	using Base = CombArray<Row<P0, P1>, 25, P0>;
 	using Base::Base;
 
 	template<bool P, int incr, U32 HALFMEN>
