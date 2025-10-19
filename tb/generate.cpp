@@ -19,7 +19,7 @@ void initializeWinIn1(Table<HALFMEN>& table) {
 				U32 bb1 = pdep<P0>(row.template unrank<false>(i1), ~bb0);
 				for (auto& elem : cell) {
 					// TODO: initialize tablebase
-					elem++;
+					elem = bb1;
 				}
 			}
 		}
