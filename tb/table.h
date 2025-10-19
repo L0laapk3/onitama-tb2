@@ -16,8 +16,7 @@ template<U32 P0, U32 P1>
 using Row = CombArray<Cell<P0, P1>, 25 - P0, P1>;
 template<U32 P0, U32 P1>
 struct FixedMenTable : CombArray<Row<P0, P1>, 25, P0> {
-	using Base = CombArray<Row<P0, P1>, 25, P0>;
-	using Base::Base;
+	using CombArray<Row<P0, P1>, 25, P0>::CombArray;
 
 	template<bool P, int incr, U32 HALFMEN>
 	auto& neighbor(Table<HALFMEN>& table);

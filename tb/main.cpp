@@ -7,7 +7,7 @@
 
 int main(int argc, char** argv) {
 	auto tb_men = argc > 1 ? std::atoi(argv[1]) : 8;
-	std::array<U32, 5> cards;
+	std::array<Card, 5> cards;
 	if (argc > 2) {
 		if (argc < 7) {
 			std::cerr << "Usage: tb [tb_men] [card1] [card2] [card3] [card4] [card5]" << std::endl;
@@ -20,10 +20,8 @@ int main(int argc, char** argv) {
 		cards = { BOAR, OX, ELEPHANT, HORSE, CRAB };
 	}
 
-	const CardsInfo cardsInfo{ cards };
 
-
-	generate(cardsInfo);
+	generate(CardPlayerMoves::make<0>(cards));
 
 	// if (1)
     //     testIndexing(cardsInfo);

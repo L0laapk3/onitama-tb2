@@ -1,33 +1,37 @@
 #pragma once
 
-#include "types.h"
+#include "move.h"
 
 #include <array>
-#include <functional>
 #include <string_view>
 #include <stdexcept>
+#include <ranges>
+#include <bit>
+#include <algorithm>
 
 
-constexpr U32 BOAR		= 0b00000'00100'01010'00000'00000;
-constexpr U32 COBRA		= 0b00000'01000'00010'01000'00000;
-constexpr U32 CRAB		= 0b00000'00100'10001'00000'00000;
-constexpr U32 CRANE		= 0b00000'00100'00000'01010'00000;
-constexpr U32 DRAGON	= 0b00000'10001'00000'01010'00000;
-constexpr U32 EEL		= 0b00000'00010'01000'00010'00000;
-constexpr U32 ELEPHANT	= 0b00000'01010'01010'00000'00000;
-constexpr U32 FROG		= 0b00000'00010'00001'01000'00000;
-constexpr U32 GOOSE		= 0b00000'00010'01010'01000'00000;
-constexpr U32 HORSE		= 0b00000'00100'00010'00100'00000;
-constexpr U32 MANTIS	= 0b00000'01010'00000'00100'00000;
-constexpr U32 MONKEY	= 0b00000'01010'00000'01010'00000;
-constexpr U32 OX		= 0b00000'00100'01000'00100'00000;
-constexpr U32 RABBIT	= 0b00000'01000'10000'00010'00000;
-constexpr U32 ROOSTER	= 0b00000'01000'01010'00010'00000;
-constexpr U32 TIGER		= 0b00100'00000'00000'00100'00000;
+using Card = Move;
 
-constexpr std::array<U32, 16> ALL_CARDS { BOAR, COBRA, CRAB, CRANE, DRAGON, EEL, ELEPHANT, FROG, GOOSE, HORSE, MANTIS, MONKEY, OX, RABBIT, ROOSTER, TIGER };
+constexpr Card BOAR     = std::rotr(0b00000'00100'01010'00000'00000U, 12);
+constexpr Card COBRA    = std::rotr(0b00000'01000'00010'01000'00000U, 12);
+constexpr Card CRAB     = std::rotr(0b00000'00100'10001'00000'00000U, 12);
+constexpr Card CRANE    = std::rotr(0b00000'00100'00000'01010'00000U, 12);
+constexpr Card DRAGON   = std::rotr(0b00000'10001'00000'01010'00000U, 12);
+constexpr Card EEL      = std::rotr(0b00000'00010'01000'00010'00000U, 12);
+constexpr Card ELEPHANT = std::rotr(0b00000'01010'01010'00000'00000U, 12);
+constexpr Card FROG     = std::rotr(0b00000'00010'00001'01000'00000U, 12);
+constexpr Card GOOSE    = std::rotr(0b00000'00010'01010'01000'00000U, 12);
+constexpr Card HORSE    = std::rotr(0b00000'00100'00010'00100'00000U, 12);
+constexpr Card MANTIS   = std::rotr(0b00000'01010'00000'00100'00000U, 12);
+constexpr Card MONKEY   = std::rotr(0b00000'01010'00000'01010'00000U, 12);
+constexpr Card OX       = std::rotr(0b00000'00100'01000'00100'00000U, 12);
+constexpr Card RABBIT   = std::rotr(0b00000'01000'10000'00010'00000U, 12);
+constexpr Card ROOSTER  = std::rotr(0b00000'01000'01010'00010'00000U, 12);
+constexpr Card TIGER    = std::rotr(0b00100'00000'00000'00100'00000U, 12);
 
-U32 inline strToCard(std::string_view str) {
+constexpr std::array<Card, 16> ALL_CARDS { BOAR, COBRA, CRAB, CRANE, DRAGON, EEL, ELEPHANT, FROG, GOOSE, HORSE, MANTIS, MONKEY, OX, RABBIT, ROOSTER, TIGER };
+
+Card inline strToCard(std::string_view str) {
 	if (str == "boar")		return BOAR;
 	if (str == "cobra")		return COBRA;
 	if (str == "crab")		return CRAB;
@@ -47,14 +51,14 @@ U32 inline strToCard(std::string_view str) {
 	throw std::runtime_error("Unknown card: " + std::string(str));
 }
 
+
+
 struct CardPermutation {
 	std::array<std::array<U8, 2>, 2> playerCards;
 	U8 sideCard;
 };
 
-
-
-constexpr std::array<CardPermutation, 30> CARDS_PERMUTATIONS = {{
+constexpr std::array<CardPermutation, 30> CARD_PERMUTATIONS = {{
 	{ 2, 3, 0, 1, 4 },
 	{ 1, 2, 0, 4, 3 },
 	{ 0, 3, 1, 2, 4 },
@@ -87,114 +91,27 @@ constexpr std::array<CardPermutation, 30> CARDS_PERMUTATIONS = {{
 	{ 3, 4, 1, 2, 0 },
 }};
 
-// input cardI, output cardI
-constexpr std::array<std::array<std::array<U8, 2>, 2>, 30> CARDS_SWAP = {{
-	{ 27, 3,  22, 20 },
-	{ 20, 24, 16, 7  },
-	{ 29, 8,  28, 6  },
-	{ 27, 0,  26, 17 },
-	{ 26, 19, 15, 11 },
-	{ 25, 12, 21, 9  },
-	{ 22, 11, 28, 2  },
-	{ 17, 9,  16, 1  },
-	{ 29, 2,  23, 19 },
-	{ 17, 7,  21, 5  },
-	{ 21, 23, 14, 13 },
-	{ 22, 6,  15, 4  },
-	{ 25, 5,  18, 24 },
-	{ 18, 28, 14, 10 },
-	{ 16, 15, 13, 10 },
-	{ 16, 14, 11, 4  },
-	{ 15, 14, 1,  7  },
-	{ 9,  7,  26, 3  },
-	{ 28, 13, 24, 12 },
-	{ 26, 4,  23, 8  },
-	{ 24, 1,  22, 0  },
-	{ 23, 10, 9,  5  },
-	{ 6,  11, 20, 0  },
-	{ 21, 10, 19, 8  },
-	{ 20, 1,  18, 12 },
-	{ 5,  12, 29, 27 },
-	{ 19, 4,  17, 3  },
-	{ 3,  0,  29, 25 },
-	{ 18, 13, 6,  2  },
-	{ 8,  2,  25, 27 },
-}};
 
+struct CardPlayerMoves : public std::array<Move, 30> {
+	using std::array<Move, 30>::array;
 
-// input cardI, output cardI
-constexpr std::array<U8, 30> CARDS_INVERT = { 10, 8, 7, 13, 12, 11, 9, 2, 1, 6, 0, 5, 4, 3, 27, 25, 29, 28, 26, 24, 23, 22, 21, 20, 19, 15, 18, 14, 17, 16 };
+	template<bool PLAYER>
+	static CardPlayerMoves make(std::array<Card, 5> cards) {
+		CardPlayerMoves result;
+		auto view = CARD_PERMUTATIONS | std::views::transform([&](const CardPermutation& perm) {
+			return cards[perm.playerCards[PLAYER][0]] | cards[perm.playerCards[PLAYER][1]];
+		});
+		std::ranges::copy(view, result.begin());
+		return result;
+	}
 
-
-// output cardI
-constexpr std::array<std::array<U8, 12>, 5> CARDS_USED_IN = {{
-	{ 10, 4,  2,  13, 11, 8,  14, 6,  19, 15, 28, 23 },
-	{ 10, 7,  12, 13, 1,  5,  14, 24, 9,  16, 18, 21 },
-	{ 4,  7,  0,  11, 1,  3,  15, 20, 17, 16, 22, 26 },
-	{ 2,  12, 0,  6,  24, 27, 28, 20, 25, 18, 22, 29 },
-	{ 8,  5,  3,  19, 9,  27, 23, 17, 25, 21, 26, 29 },
-}};
-
-
-// output cardI
-constexpr std::array<U8, 10> CARDS_P0_PAIRS = { 10, 4, 2, 7, 12, 0, 8, 5, 3, 27 };
-
-
-
-typedef std::array<U32, 25> MoveBoard;
-
-template<bool invert>
-constexpr auto generateMoveBoard(const U32 card) {
-    constexpr std::array<U32, 5> shiftMasks{
-        0b11100'11100'11100'11100'11100,
-        0b11110'11110'11110'11110'11110,
-        0b11111'11111'11111'11111'11111,
-        0b01111'01111'01111'01111'01111,
-        0b00111'00111'00111'00111'00111,
-    };
-	U32 cardInverted = 0;
-	for (U64 i = 0; i < 25; i++)
-		cardInverted |= ((card >> i) & 1) << (invert ? 24 - i : i);
-
-	MoveBoard moveBoard;
-    for (U64 i = 0; i < 25; i++) {
-        U32 maskedMove = cardInverted & shiftMasks[i % 5];
-        moveBoard[i] = (i > 12 ? maskedMove << (i - 12) : maskedMove >> (12 - i)) & ((1ULL << 25) - 1);
-    }
-	return moveBoard;
-}
-
-constexpr auto combineMoveBoards(const MoveBoard& a, const MoveBoard& b) {
-	MoveBoard comb;
-	#pragma unroll
-    for (U64 i = 0; i < 25; i++)
-		comb[i] = a[i] | b[i];
-	return comb;
-}
-
-
-
-
-typedef std::array<U32, 5> CardSet;
-typedef std::array<MoveBoard, 5> MoveBoardSet;
-
-template<bool invert>
-constexpr auto generateMoveBoardSet(const CardSet& cards) {
-	MoveBoardSet moveBoards;
-	for (U64 i = 0; i < 5; i++)
-		moveBoards[i] = generateMoveBoard<invert>(cards[i]);
-    return moveBoards;
-}
-
-
-
-struct CardsInfo {
-	CardSet cards;
-	MoveBoardSet moveBoardsForward = generateMoveBoardSet<false>(cards);
-	MoveBoardSet moveBoardsReverse = generateMoveBoardSet<true>(cards);
+	U32 inline validPerms(Move move) const {
+		U32 res = 0;
+		for (U32 i = 0; i < size(); i++) {
+			if ((*this)[i] & move) {
+				res |= (1U << i);
+			}
+		}
+		return res;
+	}
 };
-
-
-void print(const MoveBoard& moves);
-
-void iterateCardCombinations(std::function<void(const CardsInfo&, const std::array<U32, 5>&)> cb);
