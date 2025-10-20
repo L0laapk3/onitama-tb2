@@ -59,7 +59,7 @@ void initializeWinIn1(Table<HALFMEN>& table, const CardPreCalc& cards) {
 
 
 template<U32 P0, U32 P1>
-U64 singleDepthPass(FixedMenTable<P0, P1>& table, const CardPreCalc& cards) {
+U64 singlePass(FixedMenTable<P0, P1>& table, const CardPreCalc& cards) {
 	return 0;
 }
 
@@ -73,7 +73,7 @@ void generate(const CardPreCalc& cards) {
 		U64 totalChanged = 0, lastTotal = -1;
 		while (totalChanged != lastTotal) {
 			lastTotal = totalChanged;
-			totalChanged += singleDepthPass<P0, P1>(fixedMenTable, cards);
+			totalChanged += singlePass<P0, P1>(fixedMenTable, cards);
 		}
 		std::cout << "TB<" << P0 << ", " << P1 << "> total changed: " << totalChanged << std::endl;
 	});
