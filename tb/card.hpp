@@ -10,28 +10,37 @@
 #include <algorithm>
 
 
-using Card = Move;
+template<bool REVERSE = false>
+struct Card : public Move<REVERSE> {
+	using Move<REVERSE>::Move;
 
-constexpr Card BOAR     = std::rotr(0b00000'00100'01010'00000'00000U, 12);
-constexpr Card COBRA    = std::rotr(0b00000'01000'00010'01000'00000U, 12);
-constexpr Card CRAB     = std::rotr(0b00000'00100'10001'00000'00000U, 12);
-constexpr Card CRANE    = std::rotr(0b00000'00100'00000'01010'00000U, 12);
-constexpr Card DRAGON   = std::rotr(0b00000'10001'00000'01010'00000U, 12);
-constexpr Card EEL      = std::rotr(0b00000'00010'01000'00010'00000U, 12);
-constexpr Card ELEPHANT = std::rotr(0b00000'01010'01010'00000'00000U, 12);
-constexpr Card FROG     = std::rotr(0b00000'00010'00001'01000'00000U, 12);
-constexpr Card GOOSE    = std::rotr(0b00000'00010'01010'01000'00000U, 12);
-constexpr Card HORSE    = std::rotr(0b00000'00100'00010'00100'00000U, 12);
-constexpr Card MANTIS   = std::rotr(0b00000'01010'00000'00100'00000U, 12);
-constexpr Card MONKEY   = std::rotr(0b00000'01010'00000'01010'00000U, 12);
-constexpr Card OX       = std::rotr(0b00000'00100'01000'00100'00000U, 12);
-constexpr Card RABBIT   = std::rotr(0b00000'01000'10000'00010'00000U, 12);
-constexpr Card ROOSTER  = std::rotr(0b00000'01000'01010'00010'00000U, 12);
-constexpr Card TIGER    = std::rotr(0b00100'00000'00000'00100'00000U, 12);
+	constexpr Card<!REVERSE> reverse() const {
+		return { Move<REVERSE>::reverse() };
+	}
+};
 
-constexpr std::array<Card, 16> ALL_CARDS { BOAR, COBRA, CRAB, CRANE, DRAGON, EEL, ELEPHANT, FROG, GOOSE, HORSE, MANTIS, MONKEY, OX, RABBIT, ROOSTER, TIGER };
+constexpr Card<> BOAR     = 0b00000'00100'01010'00000'00000U;
+constexpr Card<> COBRA    = 0b00000'01000'00010'01000'00000U;
+constexpr Card<> CRAB     = 0b00000'00100'10001'00000'00000U;
+constexpr Card<> CRANE    = 0b00000'00100'00000'01010'00000U;
+constexpr Card<> DRAGON   = 0b00000'10001'00000'01010'00000U;
+constexpr Card<> EEL      = 0b00000'00010'01000'00010'00000U;
+constexpr Card<> ELEPHANT = 0b00000'01010'01010'00000'00000U;
+constexpr Card<> FROG     = 0b00000'00010'00001'01000'00000U;
+constexpr Card<> GOOSE    = 0b00000'00010'01010'01000'00000U;
+constexpr Card<> HORSE    = 0b00000'00100'00010'00100'00000U;
+constexpr Card<> MANTIS   = 0b00000'01010'00000'00100'00000U;
+constexpr Card<> MONKEY   = 0b00000'01010'00000'01010'00000U;
+constexpr Card<> OX       = 0b00000'00100'01000'00100'00000U;
+constexpr Card<> RABBIT   = 0b00000'01000'10000'00010'00000U;
+constexpr Card<> ROOSTER  = 0b00000'01000'01010'00010'00000U;
+constexpr Card<> TIGER    = 0b00100'00000'00000'00100'00000U;
 
-Card inline strToCard(std::string_view str) {
+
+
+constexpr std::array<Card<>, 16> ALL_CARDS { BOAR, COBRA, CRAB, CRANE, DRAGON, EEL, ELEPHANT, FROG, GOOSE, HORSE, MANTIS, MONKEY, OX, RABBIT, ROOSTER, TIGER };
+
+Card<> inline strToCard(std::string_view str) {
 	if (str == "boar")		return BOAR;
 	if (str == "cobra")		return COBRA;
 	if (str == "crab")		return CRAB;
@@ -91,27 +100,42 @@ constexpr std::array<CardPermutation, 30> CARD_PERMUTATIONS = {{
 	{ 3, 4, 1, 2, 0 },
 }};
 
-
-struct CardPlayerMoves : public std::array<Move, 30> {
-	using std::array<Move, 30>::array;
-
-	template<bool PLAYER>
-	static CardPlayerMoves make(std::array<Card, 5> cards) {
-		CardPlayerMoves result;
-		auto view = CARD_PERMUTATIONS | std::views::transform([&](const CardPermutation& perm) {
-			return cards[perm.playerCards[PLAYER][0]] | cards[perm.playerCards[PLAYER][1]];
-		});
-		std::ranges::copy(view, result.begin());
-		return result;
-	}
-
-	U32 inline validPerms(Move move) const {
-		U32 res = 0;
-		for (U32 i = 0; i < size(); i++) {
-			if ((*this)[i] & move) {
-				res |= (1U << i);
+template<bool PLAYER>
+constexpr auto CARDS_USED_IN = []{
+	std::array<U32, 5> res{};
+	for (U32 cardI = 0; cardI < 5; cardI++) {
+		for (U32 permI = 0; permI < CARD_PERMUTATIONS.size(); permI++) {
+			const auto& perm = CARD_PERMUTATIONS[permI];
+			if (perm.playerCards[PLAYER][0] == cardI || perm.playerCards[PLAYER][1] == cardI) {
+				res[cardI] |= 1U << permI;
 			}
 		}
+	}
+	return res;
+}();
+
+
+template<bool REVERSE = false>
+struct Cards : public std::array<Card<REVERSE>, 5> {
+
+	template<bool PLAYER>
+	U32 inline validPerms(Move<!PLAYER> move) const {
+		static_assert(PLAYER == !REVERSE);
+		U32 res = 0;
+		#pragma unroll
+		for (U32 i = 0; i < this->size(); i++)
+			if ((*this)[i] & move)
+				res |= CARDS_USED_IN<PLAYER>[i];
 		return res;
+	}
+
+	constexpr Cards<!REVERSE> reverse() const {
+		return {
+			(*this)[0].reverse(),
+			(*this)[1].reverse(),
+			(*this)[2].reverse(),
+			(*this)[3].reverse(),
+			(*this)[4].reverse(),
+		};
 	}
 };

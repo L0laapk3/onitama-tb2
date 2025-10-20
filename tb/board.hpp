@@ -2,52 +2,60 @@
 
 #include "types.h"
 #include "move.h"
+#include "pdep.hpp"
 
 #include <array>
-#include <bit>
 
+constexpr U32 CENTER = 12;
+// temple is the spot that when a player moves their king there, they win
+constexpr std::array<U32, 2> PTEMPLE = { 22, 2 };
 
-
-constexpr std::array<U64, 2> PTEMPLE = { 22, 2 };
+template<bool REVERSE>
+constexpr auto COL_MASKS = []{
+	std::array<Move<REVERSE>, 25> res;
+	for (U32 i = 0; i < 25; i += 5) {
+		res[i    ] = REVERSE ? 0b11100'11100'11100'11100'11100U : 0b00111'00111'00111'00111'00111U;
+		res[i + 1] = REVERSE ? 0b11110'11110'11110'11110'11110U : 0b01111'01111'01111'01111'01111U;
+		res[i + 2] = REVERSE ? 0b11111'11111'11111'11111'11111U : 0b11111'11111'11111'11111'11111U;
+		res[i + 3] = REVERSE ? 0b01111'01111'01111'01111'01111U : 0b11110'11110'11110'11110'11110U;
+		res[i + 4] = REVERSE ? 0b00111'00111'00111'00111'00111U : 0b11100'11100'11100'11100'11100U;
+	}
+	return res;
+}();
 
 class Board {
 public:
 	std::array<U32, 2> bbp; // bitboard of player pieces
 	std::array<U32, 2> ik; // index of kings
 
+	// series of helper functions that calculate what reverse move bits required to reach that situation
 
-	// series of helper functions that calculate what move board
-	template <bool PLAYER>
-	Move inline isTempleKingInRange() {
-		// player king can move to temple
-		return std::rotl(1U, PTEMPLE[PLAYER] - ik[PLAYER]);
+	// Which move bit is required for player to move the king to the temple?
+	template<bool PLAYER>
+	Move<!PLAYER> inline kingTemple() {
+		return 1U << (CENTER + ik[PLAYER] - PTEMPLE[PLAYER]); // No row wrapping can happen here because the temples are always in the middle of a row
 	}
 
-	// no player piece is blocking the temple.
-	template <bool PLAYER>
+	// Is a player piece in the way of its own temple?
+	template<bool PLAYER>
 	bool inline isTempleFree() {
 		return !(bbp[PLAYER] & (1U << PTEMPLE[PLAYER]));
 	}
 
-
-	template <bool PLAYER>
-	Move inline isTempleWinInOne() {
-		return isTempleFree<PLAYER>() ? isTempleKingInRange<PLAYER>() : 0;
+	template<bool PLAYER>
+	Move<!PLAYER> inline templeWinInOne() {
+		return isTempleFree<PLAYER>() ? kingTemple<PLAYER>() : Move<!PLAYER>{0U};
 	}
 
-	// is !player king safe?
-	// is player attacking !players king?
-	template <bool PLAYER>
-	Move inline isTakeWinInOne() {
-		return std::rotl(bbp[PLAYER], ik[!PLAYER]);
+	// is !players king safe?
+	// What move bits can player use to move a piece to take !player's king?
+	template<bool PLAYER>
+	Move<!PLAYER> inline takeWinInOne() {
+		return signed_shl(bbp[PLAYER] & COL_MASKS<!PLAYER>[ik[!PLAYER]], ik[!PLAYER] - CENTER);
 	}
 
-	template <bool PLAYER>
-	Move inline isWinInOne() {
-		return isTempleWinInOne<PLAYER>() | isTakeWinInOne<PLAYER>();
+	template<bool PLAYER>
+	Move<!PLAYER> inline winInOne() {
+		return templeWinInOne<PLAYER>() | takeWinInOne<PLAYER>();
 	}
-
-	// debug utils
-	void print() const;
-	Board invert() const;
 };

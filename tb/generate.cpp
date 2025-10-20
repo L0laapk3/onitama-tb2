@@ -13,8 +13,9 @@
 
 
 template<U32 HALFMEN>
-void initializeWinIn1(Table<HALFMEN>& table, const CardPlayerMoves& cardMoves) {
+void initializeWinIn1(Table<HALFMEN>& table, const Cards<1>& rCards) {
 	U64 winIn1Count = 0;
+	U64 totalEntries = 0;
 	table.iterateFixedMenTables([&]<U32 P0, U32 P1>(FixedMenTable<P0, P1>& fixedMenTable) {
 		for (U64 i0 = 0; i0 < fixedMenTable.size(); i0++) {
 			auto& row = fixedMenTable[i0];
@@ -37,22 +38,24 @@ void initializeWinIn1(Table<HALFMEN>& table, const CardPlayerMoves& cardMoves) {
 						U32 ik1 = std::countr_zero(bb1_k);
 						bb1_k &= bb1_k - 1;
 						Board board{ bb0, bb1, ik0, ik1 };
-						Move winMove = board.template isWinInOne<0>();
-						*entry = cardMoves.validPerms(winMove);
-						winIn1Count += std::popcount(*entry);
-						entry++;
+						Move winMove = board.winInOne<0>();
+						U32 winPerms = rCards.validPerms<0>(winMove);
+						*entry++ = winPerms;
+						winIn1Count += std::popcount(winPerms);
 					}
 				}
+				totalEntries += 30 * P0 * P1;
 			}
 		}
 	});
 	std::cout << "Win in 1 entries: " << winIn1Count << std::endl;
+	std::cout << "Total entries: " << totalEntries << std::endl;
 }
 
 
 
 
-void generate(const CardPlayerMoves& cardMoves) {
+void generate(const Cards<>& cards) {
 	auto table = std::make_unique<Table<4>>();
-	initializeWinIn1(*table, cardMoves);
+	initializeWinIn1(*table, cards.reverse());
 }
