@@ -11,10 +11,7 @@ constexpr U32 CENTER = 12;
 // temple is the spot that when a player moves their king there, they win
 constexpr std::array<int, 2> PTEMPLE = { 22, 2 };
 
-template<bool REVERSE>
-inline constexpr std::array<U32, 25> MOVE_MASK = {};
-template<>
-inline constexpr std::array<U32, 25> MOVE_MASK<false>{
+inline constexpr std::array<U32, 25> MOVE_MASK{
 	0b00000'00000'00111'00111'00111U,
 	0b00000'00000'01111'01111'01111U,
 	0b00000'00000'11111'11111'11111U,
@@ -41,14 +38,6 @@ inline constexpr std::array<U32, 25> MOVE_MASK<false>{
 	0b11110'11110'11110'00000'00000U,
 	0b11100'11100'11100'00000'00000U,
 };
-template<>
-inline constexpr std::array<U32, 25> MOVE_MASK<true> = []{ // possible optimization: integrate the ik countl offset into this table
-	std::array<U32, 25> mask{};
-	for (size_t i = 0; i < 25; i++) {
-		mask[i] = MOVE_MASK<false>[24 - i];
-	}
-	return mask;
-}();
 
 class Board {
 public:
@@ -87,7 +76,7 @@ public:
 	// What move bits can player use to move a piece to take !player's king?
 	template<bool PLAYER>
 	Move<!PLAYER> inline takeWinInOne() {
-		auto& mask = MOVE_MASK<PLAYER>[ik[!PLAYER]];
+		auto& mask = MOVE_MASK[ik[!PLAYER]];
 		return std::rotr(bbp[PLAYER] & mask, ik[!PLAYER]);
 	}
 
