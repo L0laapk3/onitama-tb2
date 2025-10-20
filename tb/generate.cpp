@@ -13,10 +13,10 @@
 
 
 template<U32 HALFMEN>
-void initializeWinIn1(Table<HALFMEN>& table, const Cards<1>& rCards) {
+void initializeWinIn1(Table<HALFMEN>& table, const CardPreCalc& cards) {
 	U64 winIn1Count = 0;
 	U64 totalEntries = 0;
-	table.iterateFixedMenTables([&]<U32 P0, U32 P1>(FixedMenTable<P0, P1>& fixedMenTable) {
+	table.iterateFixedMenTables([&]<U32 P0, U32 P1>(auto& fixedMenTable) {
 		for (U64 i0 = 0; i0 < fixedMenTable.size(); i0++) {
 			auto& row = fixedMenTable[i0];
 			U32 bb0 = fixedMenTable.template unrank<false>(i0);
@@ -39,7 +39,7 @@ void initializeWinIn1(Table<HALFMEN>& table, const Cards<1>& rCards) {
 						bb1_k &= bb1_k - 1;
 						Board board{ bb0, bb1, ik0, ik1 };
 						Move winMove = board.winInOne<0>();
-						U32 winPerms = rCards.validPerms<0>(winMove);
+						U32 winPerms = cards.get<1>().validPerms<0>(winMove);
 						*entry++ = winPerms;
 						winIn1Count += std::popcount(winPerms);
 					}
@@ -58,14 +58,23 @@ void initializeWinIn1(Table<HALFMEN>& table, const Cards<1>& rCards) {
 }
 
 
-template<U32 HALFMEN>
-void singleDepthPass(Table<HALFMEN>& table, const Cards<>& rCards) {
-
+template<U32 P0, U32 P1>
+U64 singleDepthPass(FixedMenTable<P0, P1>& table, const CardPreCalc& cards) {
+	return 0;
 }
 
 
 
-void generate(const Cards<>& cards) {
+void generate(const CardPreCalc& cards) {
 	auto table = std::make_unique<Table<3>>();
-	initializeWinIn1(*table, cards.reverse());
+	initializeWinIn1(*table, cards);
+
+	table->iterateFixedMenTables([&]<U32 P0, U32 P1>(auto& fixedMenTable) {
+		U64 totalChanged = 0, lastTotal = -1;
+		while (totalChanged != lastTotal) {
+			lastTotal = totalChanged;
+			totalChanged += singleDepthPass<P0, P1>(fixedMenTable, cards);
+		}
+		std::cout << "TB<" << P0 << ", " << P1 << "> total changed: " << totalChanged << std::endl;
+	});
 }

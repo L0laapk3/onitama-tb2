@@ -3,4 +3,4 @@
 #include "card.hpp"
 
 
-void generate(const Cards<>& cardMoves);
+void generate(const CardPreCalc& cards);

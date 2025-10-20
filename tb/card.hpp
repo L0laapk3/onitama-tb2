@@ -117,7 +117,6 @@ constexpr auto CARDS_USED_IN = []{
 
 template<bool REVERSE = false>
 struct Cards : public std::array<Card<REVERSE>, 5> {
-
 	template<bool PLAYER>
 	U32 inline validPerms(Move<!PLAYER> move) const {
 		static_assert(PLAYER == !REVERSE);
@@ -137,5 +136,25 @@ struct Cards : public std::array<Card<REVERSE>, 5> {
 			(*this)[3].reverse(),
 			(*this)[4].reverse(),
 		};
+	}
+};
+
+
+struct CardPreCalc {
+	CardPreCalc(const Cards<>& cards) : cards(cards), rCards(cards.reverse()) {}
+
+	Cards<0> cards;
+	Cards<1> rCards;
+
+	template<bool PLAYER>
+	constexpr Cards<PLAYER>& get() {
+		if constexpr (PLAYER)
+			return rCards;
+		else
+			return cards;
+	}
+	template<bool PLAYER>
+	constexpr const Cards<PLAYER>& get() const {
+		return const_cast<CardPreCalc*>(this)->get<PLAYER>();
 	}
 };
