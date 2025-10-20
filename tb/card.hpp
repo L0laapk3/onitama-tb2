@@ -19,22 +19,22 @@ struct Card : public Move<REVERSE> {
 	}
 };
 
-constexpr Card<> BOAR     = 0b00000'00100'01010'00000'00000U;
-constexpr Card<> COBRA    = 0b00000'01000'00010'01000'00000U;
-constexpr Card<> CRAB     = 0b00000'00100'10001'00000'00000U;
-constexpr Card<> CRANE    = 0b00000'00100'00000'01010'00000U;
-constexpr Card<> DRAGON   = 0b00000'10001'00000'01010'00000U;
-constexpr Card<> EEL      = 0b00000'00010'01000'00010'00000U;
-constexpr Card<> ELEPHANT = 0b00000'01010'01010'00000'00000U;
-constexpr Card<> FROG     = 0b00000'00010'00001'01000'00000U;
-constexpr Card<> GOOSE    = 0b00000'00010'01010'01000'00000U;
-constexpr Card<> HORSE    = 0b00000'00100'00010'00100'00000U;
-constexpr Card<> MANTIS   = 0b00000'01010'00000'00100'00000U;
-constexpr Card<> MONKEY   = 0b00000'01010'00000'01010'00000U;
-constexpr Card<> OX       = 0b00000'00100'01000'00100'00000U;
-constexpr Card<> RABBIT   = 0b00000'01000'10000'00010'00000U;
-constexpr Card<> ROOSTER  = 0b00000'01000'01010'00010'00000U;
-constexpr Card<> TIGER    = 0b00100'00000'00000'00100'00000U;
+constexpr Card<> BOAR     = std::rotr(0b00000'00100'01010'00000'00000U, 12);
+constexpr Card<> COBRA    = std::rotr(0b00000'01000'00010'01000'00000U, 12);
+constexpr Card<> CRAB     = std::rotr(0b00000'00100'10001'00000'00000U, 12);
+constexpr Card<> CRANE    = std::rotr(0b00000'00100'00000'01010'00000U, 12);
+constexpr Card<> DRAGON   = std::rotr(0b00000'10001'00000'01010'00000U, 12);
+constexpr Card<> EEL      = std::rotr(0b00000'00010'01000'00010'00000U, 12);
+constexpr Card<> ELEPHANT = std::rotr(0b00000'01010'01010'00000'00000U, 12);
+constexpr Card<> FROG     = std::rotr(0b00000'00010'00001'01000'00000U, 12);
+constexpr Card<> GOOSE    = std::rotr(0b00000'00010'01010'01000'00000U, 12);
+constexpr Card<> HORSE    = std::rotr(0b00000'00100'00010'00100'00000U, 12);
+constexpr Card<> MANTIS   = std::rotr(0b00000'01010'00000'00100'00000U, 12);
+constexpr Card<> MONKEY   = std::rotr(0b00000'01010'00000'01010'00000U, 12);
+constexpr Card<> OX       = std::rotr(0b00000'00100'01000'00100'00000U, 12);
+constexpr Card<> RABBIT   = std::rotr(0b00000'01000'10000'00010'00000U, 12);
+constexpr Card<> ROOSTER  = std::rotr(0b00000'01000'01010'00010'00000U, 12);
+constexpr Card<> TIGER    = std::rotr(0b00100'00000'00000'00100'00000U, 12);
 
 
 

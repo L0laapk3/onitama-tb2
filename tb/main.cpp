@@ -7,7 +7,7 @@
 
 int main(int argc, char** argv) {
 	auto tb_men = argc > 1 ? std::atoi(argv[1]) : 8;
-	Cards cards;
+	Cards cards{{ BOAR, OX, ELEPHANT, HORSE, CRAB }};
 	if (argc > 2) {
 		if (argc < 7) {
 			std::cerr << "Usage: tb [tb_men] [card1] [card2] [card3] [card4] [card5]" << std::endl;
@@ -16,8 +16,6 @@ int main(int argc, char** argv) {
 		for (int i = 0; i < 5; i++) {
 			cards[i] = strToCard(argv[i + 2]);
 		}
-	} else {
-		cards = { BOAR, OX, ELEPHANT, HORSE, CRAB };
 	}
 
 

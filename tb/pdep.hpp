@@ -44,12 +44,3 @@ inline U32 pext(U32 src, U32 mask) {
 	assert(res == src);
 	return USE_PDEP ? res : src;
 }
-
-
-// signed shift left
-inline U32 signed_shl(U32 value, I32 shift) {
-	if (shift >= 0)
-		return value << shift;
-	else
-		return value >> -shift;
-}

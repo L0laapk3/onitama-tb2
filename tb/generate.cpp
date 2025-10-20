@@ -28,14 +28,14 @@ void initializeWinIn1(Table<HALFMEN>& table, const Cards<1>& rCards) {
 				for (U32 _ik0 = 0; _ik0 < P0; _ik0++) {
 					if (_ik0 == P0 - 1 && !bb0_k) [[unlikely]] break;
 					assert(bb0_k);
-					U32 ik0 = std::countr_zero(bb0_k);
+					int ik0 = std::countr_zero(bb0_k);
 					bb0_k &= bb0_k - 1;
 					U32 bb1_k = bb1 & ~(1U << PTEMPLE[1]);
 					#pragma unroll
 					for (U32 _ik1 = 0; _ik1 < P1; _ik1++) {
 						if (_ik1 == P1 - 1 && !bb1_k) [[unlikely]] break;
 						assert(bb1_k);
-						U32 ik1 = std::countr_zero(bb1_k);
+						int ik1 = std::countr_zero(bb1_k);
 						bb1_k &= bb1_k - 1;
 						Board board{ bb0, bb1, ik0, ik1 };
 						Move winMove = board.winInOne<0>();
@@ -44,9 +44,9 @@ void initializeWinIn1(Table<HALFMEN>& table, const Cards<1>& rCards) {
 						winIn1Count += std::popcount(winPerms);
 					}
 				}
-				totalEntries += 30 * P0 * P1;
 			}
 		}
+		totalEntries += fixedMenTable.size() * fixedMenTable[0].size() * P0 * P1 * 30;
 	});
 	std::cout << "Win in 1 entries: " << winIn1Count << std::endl;
 	std::cout << "Total entries: " << totalEntries << std::endl;

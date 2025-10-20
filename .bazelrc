@@ -6,12 +6,12 @@ build --cpu=local
 build --cxxopt='-march=native' --cxxopt='-fconstexpr-steps=10000000'
 build --cxxopt='-Wall' --cxxopt='-Werror' --cxxopt='-Wpedantic' --cxxopt='-Wno-unused-parameter' --cxxopt='-Wno-missing-braces' --cxxopt='-Wno-unused-variable' --cxxopt='-Wno-unused-but-set-variable' --cxxopt='-Wno-unused-function' --cxxopt='-Wno-unused-private-field' --cxxopt='-Wno-switch' --cxxopt='-Wno-language-extension-token'
 
-build:opt --copt=-O3 --copt=-ffast-math --copt=-flto --linkopt=-flto
-build:opt --strip=always
+build:rel --copt=-O3 --copt=-ffast-math --copt=-flto --linkopt=-flto
+build:rel --strip=always
 
-build:opt_symbols --config=dbg --config=opt
-build:opt_symbols --strip=never
-build:opt_symbols --copt=-g
+build:rel_symbols --config=dbg --config=opt
+build:rel_symbols --strip=never
+build:rel_symbols --copt=-g
 
 build:dbg --copt=-g --copt=-O0
 build:dbg --strip=never
