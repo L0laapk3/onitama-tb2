@@ -15,7 +15,6 @@
 template<U32 HALFMEN>
 void initializeWinIn1(Table<HALFMEN>& table, const Cards<1>& rCards) {
 	U64 winIn1Count = 0;
-	U64 totalEntries = 0;
 	table.iterateFixedMenTables([&]<U32 P0, U32 P1>(FixedMenTable<P0, P1>& fixedMenTable) {
 		for (U64 i0 = 0; i0 < fixedMenTable.size(); i0++) {
 			auto& row = fixedMenTable[i0];
@@ -46,16 +45,18 @@ void initializeWinIn1(Table<HALFMEN>& table, const Cards<1>& rCards) {
 				}
 			}
 		}
-		totalEntries += fixedMenTable.size() * fixedMenTable[0].size() * P0 * P1 * 30;
 	});
-	std::cout << "Win in 1 entries: " << winIn1Count << std::endl;
-	std::cout << "Total entries: " << totalEntries << std::endl;
+
+	if (HALFMEN == 1) assert(winIn1Count == 5181);
+	if (HALFMEN == 2) assert(winIn1Count == 3787692);
+	if (HALFMEN == 3) assert(winIn1Count == 537541377);
+	if (HALFMEN == 4) assert(winIn1Count == 26991848172);
 }
 
 
 
 
 void generate(const Cards<>& cards) {
-	auto table = std::make_unique<Table<4>>();
+	auto table = std::make_unique<Table<1>>();
 	initializeWinIn1(*table, cards.reverse());
 }
