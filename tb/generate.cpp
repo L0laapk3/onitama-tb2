@@ -13,7 +13,7 @@
 
 
 template<U32 HALFMEN>
-void initializeWinIn1(Table<HALFMEN>& table, const Cards<>& rCards) {
+void initializeWinIn1(Table<HALFMEN>& table, const Cards<1>& rCards) {
 	U64 winIn1Count = 0;
 	U64 totalEntries = 0;
 	table.iterateFixedMenTables([&]<U32 P0, U32 P1>(FixedMenTable<P0, P1>& fixedMenTable) {
@@ -58,9 +58,14 @@ void initializeWinIn1(Table<HALFMEN>& table, const Cards<>& rCards) {
 }
 
 
+template<U32 HALFMEN>
+void singleDepthPass(Table<HALFMEN>& table, const Cards<>& rCards) {
+
+}
+
 
 
 void generate(const Cards<>& cards) {
 	auto table = std::make_unique<Table<2>>();
-	initializeWinIn1(*table, cards);
+	initializeWinIn1(*table, cards.reverse());
 }
