@@ -85,4 +85,6 @@ const auto& FixedMenTable<P0, P1>::neighbor(const Table<HALFMEN>& table) const {
 
 
 
-static_assert(sizeof(Table<5>) == 138472072800);
+static_assert(sizeof(Table<3>) / sizeof(U32) * 30 == 1166670000);
+static_assert(sizeof(Table<4>) / sizeof(U32) * 30 == 50960106000);
+static_assert(sizeof(Table<5>) / sizeof(U32) * 30 == 1038540546000);
