@@ -66,6 +66,6 @@ void singleDepthPass(Table<HALFMEN>& table, const Cards<>& rCards) {
 
 
 void generate(const Cards<>& cards) {
-	auto table = std::make_unique<Table<2>>();
+	auto table = std::make_unique<Table<4>>();
 	initializeWinIn1(*table, cards.reverse());
 }

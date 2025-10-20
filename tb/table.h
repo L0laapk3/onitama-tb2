@@ -3,8 +3,11 @@
 #include "types.h"
 #include "rank.hpp"
 
+#include <algorithm>
 #include <array>
+#include <functional>
 #include <tuple>
+#include <utility>
 
 
 template<U32 HALFMEN>
@@ -24,21 +27,34 @@ struct FixedMenTable : CombArray<Row<P0, P1>, 25, P0> {
 	const auto& neighbor(const Table<HALFMEN>& table) const;
 };
 
-template<U32 P0, std::size_t... Is>
-static auto makeTableRow(std::index_sequence<Is...>) -> std::tuple<FixedMenTable<P0, Is + 1>...>;
-template<U32 HALFMEN, U32 P0>
-using TableRow = decltype(makeTableRow<P0>(std::make_index_sequence<HALFMEN>{}));
+
+// Generate PIECECOUNTS in sorted order by P0+P1 at compile time
+template<U32 HALFMEN>
+constexpr auto PIECECOUNTS = []{
+	std::array<std::pair<U32, U32>, HALFMEN * HALFMEN> res;
+	auto entry = res.begin();
+	for (U32 sum = 2; sum <= 2 * HALFMEN; ++sum) { // Iterate through sums from 2 to 2*HALFMEN
+		for (U32 p0 = 1; p0 < sum; p0++) {          // Iterate through combinations that produce that sum
+			U32 p1 = sum - p0;
+			if (p0 <= HALFMEN && p1 <= HALFMEN)
+				*entry++ = {p0, p1};
+		}
+	}
+	return res;
+}();
 
 template<U32 HALFMEN, std::size_t... Is>
-static auto makeTable(std::index_sequence<Is...>) -> std::tuple<TableRow<HALFMEN, Is + 1>...>;
+static auto makeTable(std::index_sequence<Is...>) -> std::tuple<FixedMenTable<PIECECOUNTS<HALFMEN>[Is].first, PIECECOUNTS<HALFMEN>[Is].second>...>;
+
+
 template<U32 HALFMEN>
-struct Table : public decltype(makeTable<HALFMEN>(std::make_index_sequence<HALFMEN>{})) {
-	using Base = decltype(makeTable<HALFMEN>(std::make_index_sequence<HALFMEN>{}));
+struct Table : public decltype(makeTable<HALFMEN>(std::make_index_sequence<HALFMEN*HALFMEN>{})) {
+	using Base = decltype(makeTable<HALFMEN>(std::make_index_sequence<HALFMEN*HALFMEN>{}));
 	using Base::Base;
 
 	template<U32 P0, U32 P1>
 	auto& get() {
-		return std::get<P1 - 1>(std::get<P0 - 1>(static_cast<const Base&>(*this)));
+		return std::get<std::ranges::find_if(PIECECOUNTS<HALFMEN>, [&](const auto& p){ return p.first == P0 && p.second == P1; })>(static_cast<const Base&>(*this));
 	}
 	template<U32 P0, U32 P1>
 	const auto& get() const {
@@ -46,19 +62,12 @@ struct Table : public decltype(makeTable<HALFMEN>(std::make_index_sequence<HALFM
 	}
 
 	void iterateFixedMenTables(auto&& func) {
-		[&]<std::size_t... P0s>(std::index_sequence<P0s...>) {
+		[&]<std::size_t... Is>(std::index_sequence<Is...>) {
 			([&]() {
-				constexpr U32 P0 = P0s + 1;
-				auto& tableRow = std::get<P0s>(static_cast<Base&>(*this));
-				[&]<std::size_t... P1s>(std::index_sequence<P1s...>) {
-					([&]() {
-						constexpr U32 P1 = P1s + 1;
-						auto& fixedMenTable = std::get<P1s>(tableRow);
-						func.template operator()<P0, P1>(fixedMenTable);
-					}(), ...);
-				}(std::make_index_sequence<HALFMEN>{});
+				auto& fixedMenTable = std::get<Is>(static_cast<Base&>(*this));
+				func.template operator()<PIECECOUNTS<HALFMEN>[Is].first, PIECECOUNTS<HALFMEN>[Is].second>(fixedMenTable);
 			}(), ...);
-		}(std::make_index_sequence<HALFMEN>{});
+		}(std::make_index_sequence<HALFMEN * HALFMEN>{});
 	}
 };
 
