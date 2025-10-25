@@ -15,7 +15,7 @@ struct CombArray : public std::array<T, binomial(N, K)> {
 
 	// rank in combinatorial number system
 	template<bool REVERSE>
-	static constexpr U32 rank(U32 bits) {
+	static inline constexpr U32 rank(U32 bits) {
 		static_assert(K > 0);
 		assert(std::popcount(bits) == K);
 		if constexpr (REVERSE)
@@ -63,7 +63,7 @@ struct CombArray : public std::array<T, binomial(N, K)> {
 	}();
 
 	template<bool REVERSE>
-	static U32 unrank(U32 index) {
+	static inline U32 unrank(U32 index) {
 		static_assert(N <= LUT_N);
 		assert(index < binomial(N, K));
 		return UNRANK_LUT<REVERSE>[index];

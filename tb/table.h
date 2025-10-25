@@ -2,10 +2,10 @@
 
 #include "types.h"
 #include "rank.hpp"
+#include "permutation.h"
 
 #include <algorithm>
 #include <array>
-#include <functional>
 #include <tuple>
 #include <utility>
 
@@ -14,7 +14,7 @@ template<U32 HALFMEN>
 struct Table;
 
 template<U32 P0, U32 P1>
-using Cell = std::array<U32, P0 * P1>;
+using Cell = std::array<Perm, P0 * P1>;
 template<U32 P0, U32 P1>
 using Row = CombArray<Cell<P0, P1>, 25 - P0, P1>;
 template<U32 P0, U32 P1>
@@ -52,6 +52,10 @@ struct Table : public decltype(makeTable<HALFMEN>(std::make_index_sequence<HALFM
 	using Base = decltype(makeTable<HALFMEN>(std::make_index_sequence<HALFMEN*HALFMEN>{}));
 	using Base::Base;
 
+	static_assert(HALFMEN != 3 || sizeof(Base) / sizeof(U32) * 30 == 1166670000);
+	static_assert(HALFMEN != 4 || sizeof(Base) / sizeof(U32) * 30 == 50960106000);
+	static_assert(HALFMEN != 5 || sizeof(Base) / sizeof(U32) * 30 == 1038540546000);
+
 	template<U32 P0, U32 P1>
 	auto& get() {
 		return std::get<std::ranges::find_if(PIECECOUNTS<HALFMEN>, [&](const auto& p){ return p.first == P0 && p.second == P1; })>(static_cast<const Base&>(*this));
@@ -82,9 +86,3 @@ template<bool P, int incr, U32 HALFMEN>
 const auto& FixedMenTable<P0, P1>::neighbor(const Table<HALFMEN>& table) const {
 	return const_cast<FixedMenTable<P0, P1>*>(this)->neighbor<P, incr>(const_cast<Table<HALFMEN>&>(table));
 }
-
-
-
-static_assert(sizeof(Table<3>) / sizeof(U32) * 30 == 1166670000);
-static_assert(sizeof(Table<4>) / sizeof(U32) * 30 == 50960106000);
-static_assert(sizeof(Table<5>) / sizeof(U32) * 30 == 1038540546000);

@@ -3,9 +3,10 @@ build --linkopt=-fuse-ld=lld-22
 build --cxxopt='-std=c++26'
 build --cxxopt=-fcolor-diagnostics
 build --cpu=local
-build --cxxopt='-march=native' --cxxopt='-fconstexpr-steps=10000000'
+build --cxxopt='-march=native'
 build --cxxopt='-Wall' --cxxopt='-Werror' --cxxopt='-Wpedantic' --cxxopt='-Wno-unused-parameter' --cxxopt='-Wno-missing-braces' --cxxopt='-Wno-unused-variable' --cxxopt='-Wno-unused-but-set-variable' --cxxopt='-Wno-unused-function' --cxxopt='-Wno-unused-private-field' --cxxopt='-Wno-switch' --cxxopt='-Wno-language-extension-token'
 
+# build:rel --copt=-Rpass=.* --copt=-Rpass-missed=.* --copt=-Rpass-analysis=.*
 build:rel --copt=-O3 --copt=-ffast-math --copt=-flto --linkopt=-flto
 build:rel --strip=always
 

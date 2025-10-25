@@ -1,113 +1,23 @@
 #pragma once
 
+#include "card.h"
+#include "permutation.h"
 #include "move.h"
+#include "types.h"
 
 #include <array>
-#include <string_view>
-#include <stdexcept>
-#include <ranges>
 #include <bit>
-#include <algorithm>
 
 
-template<bool REVERSE = false>
-struct Card : public Move<REVERSE> {
-	using Move<REVERSE>::Move;
-
-	constexpr Card<!REVERSE> reverse() const {
-		return { Move<REVERSE>::reverse() };
-	}
-};
-
-constexpr Card<> BOAR     = std::rotr(0b00000'00100'01010'00000'00000U, 12);
-constexpr Card<> COBRA    = std::rotr(0b00000'01000'00010'01000'00000U, 12);
-constexpr Card<> CRAB     = std::rotr(0b00000'00100'10001'00000'00000U, 12);
-constexpr Card<> CRANE    = std::rotr(0b00000'00100'00000'01010'00000U, 12);
-constexpr Card<> DRAGON   = std::rotr(0b00000'10001'00000'01010'00000U, 12);
-constexpr Card<> EEL      = std::rotr(0b00000'00010'01000'00010'00000U, 12);
-constexpr Card<> ELEPHANT = std::rotr(0b00000'01010'01010'00000'00000U, 12);
-constexpr Card<> FROG     = std::rotr(0b00000'00010'00001'01000'00000U, 12);
-constexpr Card<> GOOSE    = std::rotr(0b00000'00010'01010'01000'00000U, 12);
-constexpr Card<> HORSE    = std::rotr(0b00000'00100'00010'00100'00000U, 12);
-constexpr Card<> MANTIS   = std::rotr(0b00000'01010'00000'00100'00000U, 12);
-constexpr Card<> MONKEY   = std::rotr(0b00000'01010'00000'01010'00000U, 12);
-constexpr Card<> OX       = std::rotr(0b00000'00100'01000'00100'00000U, 12);
-constexpr Card<> RABBIT   = std::rotr(0b00000'01000'10000'00010'00000U, 12);
-constexpr Card<> ROOSTER  = std::rotr(0b00000'01000'01010'00010'00000U, 12);
-constexpr Card<> TIGER    = std::rotr(0b00100'00000'00000'00100'00000U, 12);
-
-
-
-constexpr std::array<Card<>, 16> ALL_CARDS { BOAR, COBRA, CRAB, CRANE, DRAGON, EEL, ELEPHANT, FROG, GOOSE, HORSE, MANTIS, MONKEY, OX, RABBIT, ROOSTER, TIGER };
-
-Card<> inline strToCard(std::string_view str) {
-	if (str == "boar")		return BOAR;
-	if (str == "cobra")		return COBRA;
-	if (str == "crab")		return CRAB;
-	if (str == "crane")		return CRANE;
-	if (str == "dragon")	return DRAGON;
-	if (str == "eel")		return EEL;
-	if (str == "elephant")	return ELEPHANT;
-	if (str == "frog")		return FROG;
-	if (str == "goose")		return GOOSE;
-	if (str == "horse")		return HORSE;
-	if (str == "mantis")	return MANTIS;
-	if (str == "monkey")	return MONKEY;
-	if (str == "ox")		return OX;
-	if (str == "rabbit")	return RABBIT;
-	if (str == "rooster")	return ROOSTER;
-	if (str == "tiger")		return TIGER;
-	throw std::runtime_error("Unknown card: " + std::string(str));
-}
-
-
-
-struct CardPermutation {
-	std::array<std::array<U8, 2>, 2> playerCards;
-	U8 sideCard;
-};
-
-constexpr std::array<CardPermutation, 30> CARD_PERMUTATIONS = {{
-	{ 2, 3, 0, 1, 4 },
-	{ 1, 2, 0, 4, 3 },
-	{ 0, 3, 1, 2, 4 },
-	{ 2, 4, 0, 1, 3 },
-	{ 0, 2, 1, 3, 4 },
-	{ 1, 4, 0, 2, 3 },
-	{ 0, 3, 1, 4, 2 },
-	{ 1, 2, 0, 3, 4 },
-	{ 0, 4, 1, 2, 3 },
-	{ 1, 4, 0, 3, 2 },
-	{ 0, 1, 2, 3, 4 },
-	{ 0, 2, 1, 4, 3 },
-	{ 1, 3, 0, 2, 4 },
-	{ 0, 1, 2, 4, 3 },
-	{ 0, 1, 3, 4, 2 },
-	{ 0, 2, 3, 4, 1 },
-	{ 1, 2, 3, 4, 0 },
-	{ 2, 4, 0, 3, 1 },
-	{ 1, 3, 2, 4, 0 },
-	{ 0, 4, 1, 3, 2 },
-	{ 2, 3, 0, 4, 1 },
-	{ 1, 4, 2, 3, 0 },
-	{ 2, 3, 1, 4, 0 },
-	{ 0, 4, 2, 3, 1 },
-	{ 1, 3, 0, 4, 2 },
-	{ 3, 4, 0, 2, 1 },
-	{ 2, 4, 1, 3, 0 },
-	{ 3, 4, 0, 1, 2 },
-	{ 0, 3, 2, 4, 1 },
-	{ 3, 4, 1, 2, 0 },
-}};
 
 template<bool PLAYER>
 constexpr auto CARDS_USED_IN = []{
-	std::array<U32, 5> res{};
+	std::array<Perm, 5> res{};
 	for (U32 cardI = 0; cardI < 5; cardI++) {
 		for (U32 permI = 0; permI < CARD_PERMUTATIONS.size(); permI++) {
 			const auto& perm = CARD_PERMUTATIONS[permI];
 			if (perm.playerCards[PLAYER][0] == cardI || perm.playerCards[PLAYER][1] == cardI) {
-				res[cardI] |= 1U << permI;
+				res[cardI] |= Perm::fromIndex(permI);
 			}
 		}
 	}
@@ -118,9 +28,9 @@ constexpr auto CARDS_USED_IN = []{
 template<bool REVERSE = false>
 struct Cards : public std::array<Card<REVERSE>, 5> {
 	template<bool PLAYER>
-	U32 inline validPerms(Move<!PLAYER> move) const {
+	Perm inline moveToPerms(Move<!PLAYER> move) const {
 		static_assert(PLAYER == !REVERSE);
-		U32 res = 0;
+		Perm res = 0;
 		#pragma unroll
 		for (U32 i = 0; i < this->size(); i++)
 			if ((*this)[i] & move)
@@ -141,10 +51,26 @@ struct Cards : public std::array<Card<REVERSE>, 5> {
 
 
 struct CardPreCalc {
-	CardPreCalc(const Cards<>& cards) : cards(cards), rCards(cards.reverse()) {}
+	CardPreCalc(const Cards<>& cards) : cards(cards), rCards(cards.reverse()), permsWhereCardMovesTo([&]{
+		constexpr bool PLAYER = 0;
+		std::array<std::array<Perm, 25>, 2> res{};
+		for (U32 cardSlot = 0; cardSlot < 2; cardSlot++) {
+			for (U32 permI = 0; permI < CARD_PERMUTATIONS.size(); permI++) {
+				const auto& cardPerm = CARD_PERMUTATIONS[permI];
+				U32 card = std::rotl(cards[cardPerm.playerCards[PLAYER][cardSlot]].bits, 12);
+				for (U32 to = 0; to < 25; to++) {
+					if (card & (1U << to))
+						res[cardSlot][to] |= Perm::fromIndex(permI);
+				}
+			}
+		}
+		return res;
+	}()) {}
 
 	Cards<0> cards;
 	Cards<1> rCards;
+
+	std::array<std::array<Perm, 25>, 2> permsWhereCardMovesTo; // [player][to] -> permutations
 
 	template<bool PLAYER>
 	constexpr Cards<PLAYER>& get() {
